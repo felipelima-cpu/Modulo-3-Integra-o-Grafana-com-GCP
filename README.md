@@ -1,4 +1,4 @@
-em-vindo ao laboratório de Rastreamento Distribuído! Este guia vai te ajudar a entender, configurar e analisar o comportamento de microserviços usando o Google Cloud Trace integrado com OpenTelemetry.
+Bem-vindo ao laboratório de Rastreamento Distribuído! Este guia vai te ajudar a entender, configurar e analisar o comportamento de microserviços usando o Google Cloud Trace integrado com OpenTelemetry.
 
 📖 1. O Problema: O "Mistério da Sexta-feira"
 Imagine o seguinte cenário que provavelmente muitos já viveram: é sexta-feira à tarde e o monitoramento do banco dispara um alerta crítico: o tempo de resposta do serviço de transferências PIX subiu para 8 segundos.
