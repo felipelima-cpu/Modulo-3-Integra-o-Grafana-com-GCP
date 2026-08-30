@@ -6,7 +6,7 @@ Guia rápido de execução do laboratório de rastreamento distribuído.
 No seu Cloud Shell, defina seu projeto e habilite a API do Cloud Trace:
 
 ```bash
-export PROJECT_ID="twitter-clone-sre"
+export PROJECT_ID="SEU-PROJETO"
 
 gcloud services enable cloudtrace.googleapis.com --project=$PROJECT_ID
 ```
