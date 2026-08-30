@@ -1,4 +1,4 @@
-# 🚀 Lab: OpenTelemetry + Google Cloud Trace
+# Lab: OpenTelemetry + Google Cloud Trace
 
 Guia rápido de execução do laboratório de rastreamento distribuído.
 
