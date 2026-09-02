@@ -226,6 +226,7 @@ sudo mkdir -p /etc/tempo /var/lib/tempo /var/lib/tempo/generator/wal
 sudo bash -c 'cat <<EOF > /etc/tempo/tempo.yaml
 server:
   http_listen_port: 3200
+
 distributor:
   receivers:
     otlp:
@@ -234,6 +235,7 @@ distributor:
           endpoint: 0.0.0.0:4318
         grpc:
           endpoint: 0.0.0.0:4317
+
 storage:
   trace:
     backend: local
@@ -241,19 +243,10 @@ storage:
       path: /var/lib/tempo/blocks
     wal:
       path: /var/lib/tempo/wal
-overrides:
-  defaults:
-    metrics_generator:
-      processors: [span-metrics, service-graphs]
-    metrics_generator:
-  registry:
-    external_labels:
-      source: tempo
-  storage:
-    path: /var/lib/tempo/generator/wal
-  remote_write:
-    - url: http://localhost:9090/api/v1/write
 EOF'
+
+# Reiniciar o serviço do Tempo
+sudo systemctl restart tempo.service
 
 sudo bash -c 'cat <<EOF > /etc/systemd/system/tempo.service
 [Unit]
