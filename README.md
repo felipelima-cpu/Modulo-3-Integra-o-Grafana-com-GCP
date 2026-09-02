@@ -87,23 +87,33 @@ nano trace_demo.py
 Copie o bloco de código abaixo e cole dentro do editor. Este script simula um sistema de transferências bancárias com injeção de latência e validação de antifraude.
 
 ```python
-import time, random
+import os
+import time
+import random
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
-from opentelemetry.exporter.cloud_trace import CloudTraceSpanExporter
+from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+from opentelemetry.exporter.gcp_trace import CloudTraceSpanExporter
 from opentelemetry.sdk.resources import Resource, SERVICE_NAME, SERVICE_VERSION
 from opentelemetry.trace.status import Status, StatusCode
 
-# 1. Configurar Provider e Exporter
+# 1. Configurar Recursos e Provider
 resource = Resource.create({
     SERVICE_NAME: "brb-transferencias",
     SERVICE_VERSION: "2.4.1"
 })
-
-exporter = CloudTraceSpanExporter(project_id="twitter-clone-sre")
 provider = TracerProvider(resource=resource)
-provider.add_span_processor(BatchSpanProcessor(exporter))
+
+# EXPORTER 1: Grafana Tempo (Local porta 4318)
+tempo_exporter = OTLPSpanExporter(endpoint="http://localhost:4318/v1/traces")
+provider.add_span_processor(BatchSpanProcessor(tempo_exporter))
+
+# EXPORTER 2: Google Cloud Trace (Pega do ambiente ou usa fallback)
+project_id = os.getenv("PROJECT_ID", "instrutor-danilo")
+gcp_exporter = CloudTraceSpanExporter(project_id=project_id)
+provider.add_span_processor(BatchSpanProcessor(gcp_exporter))
+
 trace.set_tracer_provider(provider)
 tracer = trace.get_tracer("brb.monitoramento")
 
@@ -140,10 +150,10 @@ def processar_transferencia(de_conta: str, para_conta: str, valor: float):
         except ValueError as e:
             span.record_exception(e)
             span.set_status(Status(StatusCode.ERROR, str(e)))
-            raise e  
+            raise e
 
 # 3. Execução
-print("🚀 Enviando Traces...")
+print("🚀 Enviando Traces para o Tempo e Cloud Trace...")
 for i in range(8):
     try:
         processar_transferencia(f"BRB-{1000+i}", f"BRB-{2000+i}", random.uniform(50, 15000))
@@ -151,7 +161,7 @@ for i in range(8):
         print(f"  ❌ Falha: {e}")
     time.sleep(0.5)
 
-time.sleep(6)
+time.sleep(5)
 print("✅ Concluído!")
 ```
 
